@@ -229,6 +229,7 @@
             white-space: nowrap;
             --dx: 0px;
             --dy: 0px;
+            will-change: transform, opacity;
         }
 
         @keyframes flyAway {
@@ -256,7 +257,6 @@
         </div>
 
         <div id="explosionMode" style="display: none;" class="explosion-container">
-            <!-- Убрали сердечко из текста -->
             <div class="explosion-text">Я<br>люблю тебя</div>
         </div>
 
@@ -290,7 +290,6 @@
             let explosionTriggered = false;
             let isFading = false;
             let musicWasPlaying = false;
-            let tapHandled = false; // флаг для предотвращения двойных кликов
             const LONG_PRESS_DURATION = 600;
             const MUSIC_VOLUME = 0.4;
             musicAudio.volume = MUSIC_VOLUME;
@@ -420,12 +419,7 @@
             }
 
             function handleTap(e) {
-                // Защита от двойного вызова
-                if (tapHandled) return;
-                tapHandled = true;
-                setTimeout(() => { tapHandled = false; }, 100); // сброс через небольшое время
-
-                e.preventDefault?.();
+                e.preventDefault(); // предотвращаем возможные двойные срабатывания
 
                 if (longPressTimer) {
                     clearTimeout(longPressTimer);
@@ -456,7 +450,8 @@
                     });
                 }
 
-                const count = 8 + Math.floor(Math.random() * 8);
+                // Уменьшил количество частиц для большей плавности (было 8-16, стало 5-10)
+                const count = 5 + Math.floor(Math.random() * 6);
                 for (let i = 0; i < count; i++) {
                     const point = getRandomEdgePoint(heartWrapper);
                     createFloatingItemFromPoint(point.x, point.y);
@@ -480,9 +475,10 @@
                 }
             }
 
-            // Назначение событий
+            // Основной обработчик клика
             heartWrapper.addEventListener('click', handleTap);
 
+            // Обработка касаний для мобильных устройств
             heartWrapper.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 startLongPress(e);
@@ -492,7 +488,7 @@
                 e.preventDefault();
                 if (!explosionTriggered) {
                     cancelLongPress();
-                    // Если не было долгого нажатия (таймер не сработал), вызываем обработчик клика
+                    // Если не было долгого нажатия, вызываем handleTap
                     if (!longPressTimer) {
                         handleTap(e);
                     }
@@ -501,6 +497,7 @@
 
             heartWrapper.addEventListener('touchcancel', cancelLongPress);
 
+            // Для мыши (долгое нажатие)
             heartWrapper.addEventListener('mousedown', startLongPress);
             heartWrapper.addEventListener('mouseup', cancelLongPress);
             heartWrapper.addEventListener('mouseleave', cancelLongPress);
