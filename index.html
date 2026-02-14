@@ -38,14 +38,14 @@
             justify-content: center;
             position: relative;
             z-index: 2;
-            background: rgba(255, 255, 255, 0.7); /* более плотный фон */
+            background: rgba(255, 255, 255, 0.7); /* полупрозрачный белый */
             backdrop-filter: blur(3px);
             border-radius: 60px;
             padding: 25px 15px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* тень для объёма */
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        /* Адаптация для совсем маленьких экранов */
+        /* Адаптация для совсем маленьких экранов (iPhone SE) */
         @media (max-width: 380px) {
             body {
                 padding: 10px;
@@ -248,8 +248,271 @@
     </style>
 </head>
 <body>
-    <!-- ... (весь HTML и скрипт остаётся точно таким же, как в предыдущем ответе) ... -->
-    <!-- Для экономии места я не копирую его сюда, но в твоём файле он должен быть полностью. -->
-    <!-- Просто замени секцию <style> на эту, остальное оставь без изменений. -->
+    <div class="container" id="mainContainer">
+        <!-- Обычный режим (виден изначально) -->
+        <div id="normalMode">
+            <div class="title-text">Для любимой Дианки 🫶🏻</div>
+            <div id="heartWrapper" class="heart-wrapper">
+                <div id="heartMask" class="heart-mask">
+                    <!-- Убедитесь, что файл photo.jpg лежит рядом -->
+                    <img src="photo.jpg" alt="Наше фото" id="photo">
+                </div>
+            </div>
+            <div id="counterDisplay" class="counter">Нажатий: 0</div>
+        </div>
+
+        <!-- Режим взрыва (изначально скрыт) -->
+        <div id="explosionMode" style="display: none;" class="explosion-container">
+            <div class="explosion-text">Я ❤️<br>люблю тебя</div>
+        </div>
+
+        <!-- Аудиофайлы (убедитесь, что music.mp3 и greeting.mp3 лежат рядом) -->
+        <audio id="musicAudio" loop preload="auto">
+            <source src="music.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="greetingAudio" preload="auto">
+            <source src="greeting.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Контейнеры для летающих объектов -->
+    <div id="floatContainer" class="float-container"></div>
+    <div id="floatingHeartsContainer" class="floating-hearts"></div>
+
+    <script>
+        (function() {
+            // Элементы
+            const normalMode = document.getElementById('normalMode');
+            const explosionMode = document.getElementById('explosionMode');
+            const heartWrapper = document.getElementById('heartWrapper');
+            const heartMask = document.getElementById('heartMask');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const floatContainer = document.getElementById('floatContainer');
+            const floatingHeartsContainer = document.getElementById('floatingHeartsContainer');
+            const musicAudio = document.getElementById('musicAudio');
+            const greetingAudio = document.getElementById('greetingAudio');
+
+            let tapCount = 0;
+            let audioPlayed = false;
+            let musicStarted = false;
+            let longPressTimer = null;
+            let explosionTriggered = false;
+            let isFading = false;
+            const LONG_PRESS_DURATION = 600;
+            const MUSIC_VOLUME = 0.4;
+            musicAudio.volume = MUSIC_VOLUME;
+
+            // Массив для обычных комплиментов/сердечек
+            const floatingItems = [
+                '❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖', '💗', '💘', '💝', '💞', '💓', '💕',
+                'Конфетка', 'Цветочек', 'Лапулька', 'Солнышко', 'Зайка', 'Котик',
+                'Рыбка', 'Ягодка', 'Малышка', 'Принцесса', 'Красотка', 'Умница',
+                'Радость моя', 'Счастье', 'Любимая', 'Единственная', 'Нежная',
+                'Ласковая', 'Родная', 'Дорогая', 'Золотце', 'Пупсик', 'Сладкая',
+                'Богиня', 'Магнолия', 'Ласточка', 'Искорка', 'Фея', 'Мандаринка',
+                'Клубничка', 'Карамелька', 'Персик', 'Вишенка'
+            ];
+
+            // Массив разноцветных сердечек для взрыва
+            const heartColors = [
+                '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥', '❤️‍🩹', '💔', '❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖', '💗', '💘', '💝', '💞', '💓', '💕'
+            ];
+
+            // Получить случайную точку на границе элемента
+            function getRandomEdgePoint(element) {
+                const rect = element.getBoundingClientRect();
+                const side = Math.floor(Math.random() * 4);
+                let x, y;
+                switch(side) {
+                    case 0: x = rect.left + Math.random() * rect.width; y = rect.top; break;
+                    case 1: x = rect.right; y = rect.top + Math.random() * rect.height; break;
+                    case 2: x = rect.left + Math.random() * rect.width; y = rect.bottom; break;
+                    case 3: x = rect.left; y = rect.top + Math.random() * rect.height; break;
+                }
+                return { x, y };
+            }
+
+            function createFloatingItemFromPoint(startX, startY) {
+                const randomIndex = Math.floor(Math.random() * floatingItems.length);
+                const text = floatingItems[randomIndex];
+                const item = document.createElement('div');
+                item.className = 'float-item';
+                item.textContent = text;
+                const size = 1.5 + Math.random() * 1.5;
+                item.style.fontSize = size + 'rem';
+                item.style.left = startX + 'px';
+                item.style.top = startY + 'px';
+                const dx = (Math.random() - 0.5) * 400;
+                const dy = (Math.random() - 0.5) * 400 - 100;
+                item.style.setProperty('--dx', dx + 'px');
+                item.style.setProperty('--dy', dy + 'px');
+                const duration = 2 + Math.random() * 2;
+                item.style.animation = `flyAway ${duration}s ease-out forwards`;
+                floatContainer.appendChild(item);
+                setTimeout(() => { if (item.parentNode) item.remove(); }, 4500);
+            }
+
+            function pulseHeart() {
+                heartMask.classList.add('pulse');
+                setTimeout(() => { heartMask.classList.remove('pulse'); }, 300);
+            }
+
+            function updateCounterDisplay() {
+                counterDisplay.textContent = `Нажатий: ${tapCount}`;
+            }
+
+            // Плавное затухание музыки
+            function fadeOutMusic(callback) {
+                if (isFading) return;
+                isFading = true;
+                let vol = musicAudio.volume;
+                const step = 0.05;
+                const interval = setInterval(() => {
+                    if (vol <= 0.01) {
+                        musicAudio.volume = 0;
+                        clearInterval(interval);
+                        isFading = false;
+                        if (callback) callback();
+                    } else {
+                        vol -= step;
+                        if (vol < 0) vol = 0;
+                        musicAudio.volume = vol;
+                    }
+                }, 50);
+            }
+
+            // Плавное появление музыки
+            function fadeInMusic() {
+                let vol = musicAudio.volume;
+                const target = MUSIC_VOLUME;
+                const step = 0.05;
+                const interval = setInterval(() => {
+                    if (vol >= target - 0.01) {
+                        musicAudio.volume = target;
+                        clearInterval(interval);
+                    } else {
+                        vol += step;
+                        if (vol > target) vol = target;
+                        musicAudio.volume = vol;
+                    }
+                }, 50);
+            }
+
+            // Взрыв (долгое нажатие)
+            function triggerExplosion() {
+                if (explosionTriggered) return;
+                explosionTriggered = true;
+
+                normalMode.style.display = 'none';
+                explosionMode.style.display = 'flex';
+
+                floatingHeartsContainer.innerHTML = '';
+
+                const heartCount = 50;
+                for (let i = 0; i < heartCount; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    const randomHeart = heartColors[Math.floor(Math.random() * heartColors.length)];
+                    heart.textContent = randomHeart;
+                    const size = 1.2 + Math.random() * 1.6;
+                    heart.style.fontSize = size + 'rem';
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = Math.random() * 100 + '%';
+                    const duration = 8 + Math.random() * 10;
+                    const delay = Math.random() * 5;
+                    heart.style.animation = `floatSlow ${duration}s infinite alternate ease-in-out`;
+                    heart.style.animationDelay = delay + 's';
+                    const xOffset = (Math.random() - 0.5) * 60;
+                    const yOffset = (Math.random() - 0.5) * 60;
+                    heart.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+                    floatingHeartsContainer.appendChild(heart);
+                }
+            }
+
+            // Обработка клика
+            function handleTap(e) {
+                e.preventDefault?.();
+
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+
+                if (!musicStarted) {
+                    musicAudio.play().catch(err => console.warn('Музыка не запустилась, но это нормально для iOS.'));
+                    musicStarted = true;
+                }
+
+                pulseHeart();
+
+                tapCount++;
+                updateCounterDisplay();
+
+                if (tapCount >= 40 && !audioPlayed) {
+                    audioPlayed = true;
+                    fadeOutMusic(() => {
+                        greetingAudio.play().catch(err => console.warn('Голосовое не воспроизвелось'));
+                    });
+                    greetingAudio.addEventListener('ended', function onEnd() {
+                        greetingAudio.removeEventListener('ended', onEnd);
+                        fadeInMusic();
+                    });
+                }
+
+                const count = 8 + Math.floor(Math.random() * 8);
+                for (let i = 0; i < count; i++) {
+                    const point = getRandomEdgePoint(heartWrapper);
+                    createFloatingItemFromPoint(point.x, point.y);
+                }
+            }
+
+            // Долгое нажатие
+            function startLongPress(e) {
+                e.preventDefault();
+                if (explosionTriggered) return;
+                if (longPressTimer) clearTimeout(longPressTimer);
+                longPressTimer = setTimeout(() => {
+                    triggerExplosion();
+                    longPressTimer = null;
+                }, LONG_PRESS_DURATION);
+            }
+
+            function cancelLongPress() {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            }
+
+            // События
+            heartWrapper.addEventListener('click', handleTap);
+
+            heartWrapper.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startLongPress(e);
+            });
+
+            heartWrapper.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                if (!explosionTriggered) {
+                    cancelLongPress();
+                    if (!longPressTimer) {
+                        handleTap(e);
+                    }
+                }
+            });
+
+            heartWrapper.addEventListener('touchcancel', cancelLongPress);
+
+            heartWrapper.addEventListener('mousedown', startLongPress);
+            heartWrapper.addEventListener('mouseup', cancelLongPress);
+            heartWrapper.addEventListener('mouseleave', cancelLongPress);
+
+            heartWrapper.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            musicAudio.addEventListener('error', () => console.warn('music.mp3 не найден'));
+            greetingAudio.addEventListener('error', () => console.warn('greeting.mp3 не найден'));
+        })();
+    </script>
 </body>
 </html>
