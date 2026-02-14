@@ -22,13 +22,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px; /* гарантированный отступ от краёв */
+            padding: 20px;
             margin: 0;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* Основной контейнер-карточка */
         .container {
             width: 100%;
             max-width: 480px;
@@ -38,14 +37,14 @@
             justify-content: center;
             position: relative;
             z-index: 2;
-            background: rgba(255, 255, 255, 0.7); /* полупрозрачный белый */
+            background: rgba(255, 255, 255, 0.7);
             backdrop-filter: blur(3px);
             border-radius: 60px;
             padding: 25px 15px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        /* Адаптация для совсем маленьких экранов (iPhone SE) */
+        /* Адаптация для очень маленьких экранов */
         @media (max-width: 380px) {
             body {
                 padding: 10px;
@@ -54,7 +53,7 @@
                 padding: 20px 10px;
             }
             .title-text {
-                font-size: 1.5rem !important;
+                font-size: 1.4rem !important;
             }
             .heart-wrapper {
                 max-width: 280px !important;
@@ -65,21 +64,22 @@
             }
         }
 
-        /* Центрируем всё внутри обычного режима */
         #normalMode {
             text-align: center;
             width: 100%;
         }
 
+        /* Исправленная надпись: перенос слов, меньший шрифт */
         .title-text {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #fff;
             text-shadow: 0 0 15px #ff1a4c, 0 0 30px #ff4d6d;
             margin-bottom: 15px;
             animation: softPulse 2s ease-in-out infinite;
-            white-space: nowrap;
+            word-break: break-word;  /* разрешаем перенос длинных слов */
             padding: 0 5px;
+            line-height: 1.3;
         }
 
         @keyframes softPulse {
@@ -92,7 +92,7 @@
             width: 100%;
             aspect-ratio: 1 / 1;
             max-width: 380px;
-            margin: 5px auto; /* центрирование */
+            margin: 5px auto;
             cursor: pointer;
             position: relative;
             user-select: none;
@@ -132,7 +132,6 @@
             100% { transform: scale(1); }
         }
 
-        /* Стили для взрыва */
         .explosion-container {
             position: relative;
             display: flex;
@@ -197,11 +196,10 @@
             100% { transform: translate(-10px, 15px) rotate(-3deg); }
         }
 
-        /* Счётчик нажатий: блочный, центрированный */
         .counter {
             display: block;
             width: fit-content;
-            margin: 20px auto 0 auto; /* центрирование */
+            margin: 20px auto 0 auto;
             text-align: center;
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(5px);
@@ -249,24 +247,21 @@
 </head>
 <body>
     <div class="container" id="mainContainer">
-        <!-- Обычный режим (виден изначально) -->
         <div id="normalMode">
+            <!-- Здесь замени имя, если нужно -->
             <div class="title-text">Для любимой Дианки 🫶🏻</div>
             <div id="heartWrapper" class="heart-wrapper">
                 <div id="heartMask" class="heart-mask">
-                    <!-- Убедитесь, что файл photo.jpg лежит рядом -->
                     <img src="photo.jpg" alt="Наше фото" id="photo">
                 </div>
             </div>
             <div id="counterDisplay" class="counter">Нажатий: 0</div>
         </div>
 
-        <!-- Режим взрыва (изначально скрыт) -->
         <div id="explosionMode" style="display: none;" class="explosion-container">
             <div class="explosion-text">Я ❤️<br>люблю тебя</div>
         </div>
 
-        <!-- Аудиофайлы (убедитесь, что music.mp3 и greeting.mp3 лежат рядом) -->
         <audio id="musicAudio" loop preload="auto">
             <source src="music.mp3" type="audio/mpeg">
         </audio>
@@ -275,13 +270,11 @@
         </audio>
     </div>
 
-    <!-- Контейнеры для летающих объектов -->
     <div id="floatContainer" class="float-container"></div>
     <div id="floatingHeartsContainer" class="floating-hearts"></div>
 
     <script>
         (function() {
-            // Элементы
             const normalMode = document.getElementById('normalMode');
             const explosionMode = document.getElementById('explosionMode');
             const heartWrapper = document.getElementById('heartWrapper');
@@ -298,11 +291,11 @@
             let longPressTimer = null;
             let explosionTriggered = false;
             let isFading = false;
+            let musicWasPlaying = false; // запоминаем, играла ли музыка до паузы
             const LONG_PRESS_DURATION = 600;
             const MUSIC_VOLUME = 0.4;
             musicAudio.volume = MUSIC_VOLUME;
 
-            // Массив для обычных комплиментов/сердечек
             const floatingItems = [
                 '❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖', '💗', '💘', '💝', '💞', '💓', '💕',
                 'Конфетка', 'Цветочек', 'Лапулька', 'Солнышко', 'Зайка', 'Котик',
@@ -313,12 +306,10 @@
                 'Клубничка', 'Карамелька', 'Персик', 'Вишенка'
             ];
 
-            // Массив разноцветных сердечек для взрыва
             const heartColors = [
                 '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥', '❤️‍🩹', '💔', '❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖', '💗', '💘', '💝', '💞', '💓', '💕'
             ];
 
-            // Получить случайную точку на границе элемента
             function getRandomEdgePoint(element) {
                 const rect = element.getBoundingClientRect();
                 const side = Math.floor(Math.random() * 4);
@@ -361,8 +352,8 @@
                 counterDisplay.textContent = `Нажатий: ${tapCount}`;
             }
 
-            // Плавное затухание музыки
-            function fadeOutMusic(callback) {
+            // Плавное затухание музыки до нуля, затем пауза
+            function fadeOutAndPause(callback) {
                 if (isFading) return;
                 isFading = true;
                 let vol = musicAudio.volume;
@@ -370,6 +361,7 @@
                 const interval = setInterval(() => {
                     if (vol <= 0.01) {
                         musicAudio.volume = 0;
+                        musicAudio.pause(); // ставим на паузу для надёжности
                         clearInterval(interval);
                         isFading = false;
                         if (callback) callback();
@@ -381,9 +373,12 @@
                 }, 50);
             }
 
-            // Плавное появление музыки
-            function fadeInMusic() {
-                let vol = musicAudio.volume;
+            // Плавное увеличение громкости до исходной, перед этим запустить play
+            function fadeInFromPause() {
+                if (!musicStarted) return;
+                // Возобновляем воспроизведение с того же места
+                musicAudio.play().catch(err => console.warn('Не удалось возобновить музыку'));
+                let vol = musicAudio.volume || 0; // может быть 0 после fadeOut
                 const target = MUSIC_VOLUME;
                 const step = 0.05;
                 const interval = setInterval(() => {
@@ -398,7 +393,6 @@
                 }, 50);
             }
 
-            // Взрыв (долгое нажатие)
             function triggerExplosion() {
                 if (explosionTriggered) return;
                 explosionTriggered = true;
@@ -429,7 +423,6 @@
                 }
             }
 
-            // Обработка клика
             function handleTap(e) {
                 e.preventDefault?.();
 
@@ -450,12 +443,21 @@
 
                 if (tapCount >= 40 && !audioPlayed) {
                     audioPlayed = true;
-                    fadeOutMusic(() => {
+
+                    // Запоминаем, что музыка играла (она точно играет к 40-му клику)
+                    musicWasPlaying = true;
+
+                    // Плавно затихаем и ставим на паузу, затем играем голосовое
+                    fadeOutAndPause(() => {
                         greetingAudio.play().catch(err => console.warn('Голосовое не воспроизвелось'));
                     });
+
                     greetingAudio.addEventListener('ended', function onEnd() {
                         greetingAudio.removeEventListener('ended', onEnd);
-                        fadeInMusic();
+                        // После голосового возвращаем музыку с плавным появлением
+                        if (musicWasPlaying) {
+                            fadeInFromPause();
+                        }
                     });
                 }
 
@@ -466,7 +468,6 @@
                 }
             }
 
-            // Долгое нажатие
             function startLongPress(e) {
                 e.preventDefault();
                 if (explosionTriggered) return;
@@ -484,9 +485,10 @@
                 }
             }
 
-            // События
+            // Основной обработчик клика (работает и на мыши, и на таче)
             heartWrapper.addEventListener('click', handleTap);
 
+            // Обработка долгого нажатия на тач-устройствах
             heartWrapper.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 startLongPress(e);
@@ -496,14 +498,13 @@
                 e.preventDefault();
                 if (!explosionTriggered) {
                     cancelLongPress();
-                    if (!longPressTimer) {
-                        handleTap(e);
-                    }
+                    // Не вызываем handleTap здесь, чтобы избежать двойного срабатывания с click
                 }
             });
 
             heartWrapper.addEventListener('touchcancel', cancelLongPress);
 
+            // Для мыши (долгое нажатие)
             heartWrapper.addEventListener('mousedown', startLongPress);
             heartWrapper.addEventListener('mouseup', cancelLongPress);
             heartWrapper.addEventListener('mouseleave', cancelLongPress);
