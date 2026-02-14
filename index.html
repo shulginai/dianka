@@ -22,7 +22,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px;
+            padding: 20px; /* увеличенные отступы от краёв */
             margin: 0;
             position: relative;
             overflow-x: hidden;
@@ -30,13 +30,38 @@
 
         .container {
             width: 100%;
-            max-width: 500px;
+            max-width: 480px; /* чуть уже, чтобы не вплотную */
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             position: relative;
             z-index: 2;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(2px);
+            border-radius: 60px;
+            padding: 25px 15px; /* внутренние отступы */
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Адаптация для маленьких экранов (iPhone SE и т.п.) */
+        @media (max-width: 380px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 20px 10px;
+            }
+            .title-text {
+                font-size: 1.5rem !important;
+            }
+            .heart-wrapper {
+                max-width: 300px !important;
+            }
+            .counter {
+                font-size: 1.2rem !important;
+                padding: 8px 16px !important;
+            }
         }
 
         .title-text {
@@ -48,7 +73,7 @@
             text-align: center;
             animation: softPulse 2s ease-in-out infinite;
             white-space: nowrap;
-            padding: 0 10px;
+            padding: 0 5px;
         }
 
         @keyframes softPulse {
@@ -60,7 +85,7 @@
         .heart-wrapper {
             width: 100%;
             aspect-ratio: 1 / 1;
-            max-width: 400px;
+            max-width: 380px; /* чуть меньше, чтобы не упиралось в края */
             margin: 5px auto;
             cursor: pointer;
             position: relative;
@@ -109,11 +134,12 @@
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: 80vh;
+            min-height: 70vh; /* не на весь экран */
+            padding: 30px 0;
         }
 
         .explosion-text {
-            font-size: 4rem;
+            font-size: 3.5rem; /* чуть меньше на маленьких экранах */
             font-weight: bold;
             color: #fff;
             text-shadow: 0 0 20px #ff1a4c, 0 0 40px #ff4d6d;
@@ -125,6 +151,12 @@
             position: relative;
             z-index: 10;
             animation: glow 2s infinite alternate;
+        }
+
+        @media (max-width: 380px) {
+            .explosion-text {
+                font-size: 2.8rem;
+            }
         }
 
         @keyframes glow {
@@ -159,8 +191,11 @@
             100% { transform: translate(-10px, 15px) rotate(-3deg); }
         }
 
+        /* Счётчик нажатий: теперь центрирован и не растянут */
         .counter {
-            margin-top: 20px;
+            margin: 20px auto 0 auto;  /* верхний отступ, автоматические боковые */
+            display: inline-block;      /* ширина по содержимому */
+            text-align: center;         /* текст по центру */
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(5px);
             padding: 12px 24px;
@@ -254,6 +289,7 @@
             let musicStarted = false;
             let longPressTimer = null;
             let explosionTriggered = false; // чтобы взрыв сработал только один раз
+            let isFading = false;            // чтобы избежать повторных fade
             const LONG_PRESS_DURATION = 600;
             const MUSIC_VOLUME = 0.4;
             musicAudio.volume = MUSIC_VOLUME;
@@ -317,13 +353,17 @@
                 counterDisplay.textContent = `Нажатий: ${tapCount}`;
             }
 
+            // Плавное затухание музыки
             function fadeOutMusic(callback) {
+                if (isFading) return;
+                isFading = true;
                 let vol = musicAudio.volume;
                 const step = 0.05;
                 const interval = setInterval(() => {
                     if (vol <= 0.01) {
                         musicAudio.volume = 0;
                         clearInterval(interval);
+                        isFading = false;
                         if (callback) callback();
                     } else {
                         vol -= step;
@@ -333,6 +373,7 @@
                 }, 50);
             }
 
+            // Плавное появление музыки до исходной громкости
             function fadeInMusic() {
                 let vol = musicAudio.volume;
                 const target = MUSIC_VOLUME;
@@ -368,26 +409,20 @@
                     const heart = document.createElement('div');
                     heart.className = 'floating-heart';
                     
-                    // Случайный символ из массива
                     const randomHeart = heartColors[Math.floor(Math.random() * heartColors.length)];
                     heart.textContent = randomHeart;
 
-                    // Случайный размер (1.2rem - 2.8rem)
                     const size = 1.2 + Math.random() * 1.6;
                     heart.style.fontSize = size + 'rem';
 
-                    // Случайная позиция на экране (чтобы покрыть всю область вокруг текста)
-                    // Используем viewport width/height
                     heart.style.left = Math.random() * 100 + '%';
                     heart.style.top = Math.random() * 100 + '%';
 
-                    // Индивидуальная анимация: разная скорость, задержка, перемещение
-                    const duration = 8 + Math.random() * 10; // 8-18 секунд
-                    const delay = Math.random() * 5; // 0-5 сек
+                    const duration = 8 + Math.random() * 10;
+                    const delay = Math.random() * 5;
                     heart.style.animation = `floatSlow ${duration}s infinite alternate ease-in-out`;
                     heart.style.animationDelay = delay + 's';
 
-                    // Небольшая случайная начальная позиция смещения
                     const xOffset = (Math.random() - 0.5) * 60;
                     const yOffset = (Math.random() - 0.5) * 60;
                     heart.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
@@ -419,9 +454,13 @@
                 // После 40 нажатий запускаем голосовое
                 if (tapCount >= 40 && !audioPlayed) {
                     audioPlayed = true;
+
+                    // Затухание музыки, затем проигрывание голоса
                     fadeOutMusic(() => {
                         greetingAudio.play().catch(err => console.warn('Голосовое не воспроизвелось'));
                     });
+
+                    // Когда голосовое закончится, вернуть музыку
                     greetingAudio.addEventListener('ended', function onEnd() {
                         greetingAudio.removeEventListener('ended', onEnd);
                         fadeInMusic();
