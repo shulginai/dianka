@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>С Днём Святого Валентина ❤️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #ffdde1 0%, #ffb6c1 100%);
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .title-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 15px #ff1a4c, 0 0 30px #ff4d6d;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: softPulse 2s ease-in-out infinite;
+            white-space: nowrap;
+            padding: 0 10px;
+        }
+
+        @keyframes softPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; text-shadow: 0 0 25px #ff4d6d, 0 0 50px #ff1a4c; }
+            100% { transform: scale(1); opacity: 0.9; }
+        }
+
+        .heart-wrapper {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            max-width: 400px;
+            margin: 5px auto;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        .heart-mask {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 88.9L16.2 55.3C7.3 46.4 7.3 32 16.2 23.1s23.3-8.9 32.2 0L50 24.5l1.6-1.4c8.9-8.9 23.3-8.9 32.2 0 8.9 8.9 8.9 23.3 0 32.2L50 88.9z" fill="black"/></svg>');
+            mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M50 88.9L16.2 55.3C7.3 46.4 7.3 32 16.2 23.1s23.3-8.9 32.2 0L50 24.5l1.6-1.4c8.9-8.9 23.3-8.9 32.2 0 8.9 8.9 8.9 23.3 0 32.2L50 88.9z" fill="black"/></svg>');
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            background: #ff4d6d;
+            box-shadow: 0 20px 30px rgba(180, 30, 60, 0.5);
+        }
+
+        .heart-mask img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .pulse {
+            animation: clickPulse 0.3s ease;
+        }
+
+        @keyframes clickPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Стили для взрыва */
+        .explosion-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            min-height: 80vh;
+        }
+
+        .explosion-text {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 20px #ff1a4c, 0 0 40px #ff4d6d;
+            text-align: center;
+            line-height: 1.3;
+            word-break: break-word;
+            max-width: 100%;
+            padding: 20px;
+            position: relative;
+            z-index: 10;
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #ff1a4c, 0 0 40px #ff4d6d; }
+            to { text-shadow: 0 0 30px #ff4d6d, 0 0 70px #ff1a4c; }
+        }
+
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .floating-heart {
+            position: absolute;
+            font-size: 1.8rem;
+            opacity: 0.8;
+            animation: floatSlow 12s infinite alternate ease-in-out;
+            filter: drop-shadow(0 5px 5px rgba(255, 80, 120, 0.3));
+            will-change: transform;
+        }
+
+        @keyframes floatSlow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(30px, -20px) rotate(10deg); }
+            50% { transform: translate(-20px, 30px) rotate(-5deg); }
+            75% { transform: translate(15px, -25px) rotate(8deg); }
+            100% { transform: translate(-10px, 15px) rotate(-3deg); }
+        }
+
+        .counter {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(5px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            color: #b3406c;
+            border: 2px solid white;
+            font-weight: 600;
+            box-shadow: 0 5px 0 #e198aa;
+        }
+
+        .float-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .float-item {
+            position: absolute;
+            font-size: 2rem;
+            font-weight: 500;
+            animation: flyAway 2.5s ease-out forwards;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+            white-space: nowrap;
+            --dx: 0px;
+            --dy: 0px;
+        }
+
+        @keyframes flyAway {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--dx), var(--dy)) scale(0.2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="mainContainer">
+        <!-- Обычный режим -->
+        <div id="normalMode">
+            <div class="title-text">Для любимой Дианки 🫶🏻</div>
+            <div id="heartWrapper" class="heart-wrapper">
+                <div id="heartMask" class="heart-mask">
+                    <img src="photo.jpg" alt="Наше фото" id="photo">
+                </div>
+            </div>
+            <div id="counterDisplay" class="counter">Нажатий: 0</div>
+        </div>
+
+        <!-- Режим взрыва (изначально скрыт) -->
+        <div id="explosionMode" style="display: none;" class="explosion-container">
+            <div class="explosion-text">Я ❤️<br>люблю тебя</div>
+        </div>
+
+        <!-- Аудио -->
+        <audio id="musicAudio" loop preload="auto">
+            <source src="music.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="greetingAudio" preload="auto">
+            <source src="greeting.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Контейнеры для летающих объектов -->
+    <div id="floatContainer" class="float-container"></div>
+    <div id="floatingHeartsContainer" class="floating-hearts"></div>
+
+    <script>
+        (function() {
+            // Элементы обычного режима
+            const normalMode = document.getElementById('normalMode');
+            const explosionMode = document.getElementById('explosionMode');
+            const heartWrapper = document.getElementById('heartWrapper');
+            const heartMask = document.getElementById('heartMask');
+            const counterDisplay = document.getElementById('counterDisplay');
+            const floatContainer = document.getElementById('floatContainer');
+            const floatingHeartsContainer = document.getElementById('floatingHeartsContainer');
+            const musicAudio = document.getElementById('musicAudio');
+            const greetingAudio = document.getElementById('greetingAudio');
+
+            let tapCount = 0;
+            let audioPlayed = false;
+            let musicStarted = false;
+            let longPressTimer = null;
+            let explosionTriggered = false; // чтобы взрыв сработал только один раз
+            const LONG_PRESS_DURATION = 600;
+            const MUSIC_VOLUME = 0.4;
+            musicAudio.volume = MUSIC_VOLUME;
+
+            // Массив для обычных комплиментов/сердечек
+            const floatingItems = [
+                '❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖', '💗', '💘', '💝', '💞', '💓', '💕',
+                'Конфетка', 'Цветочек', 'Лапулька', 'Солнышко', 'Зайка', 'Котик',
+                'Рыбка', 'Ягодка', 'Малышка', 'Принцесса', 'Красотка', 'Умница',
+                'Радость моя', 'Счастье', 'Любимая', 'Единственная', 'Нежная',
+                'Ласковая', 'Родная', 'Дорогая', 'Золотце', 'Пупсик', 'Сладкая',
+                'Богиня', 'Магнолия', 'Ласточка', 'Искорка', 'Фея', 'Мандаринка',
+                'Клубничка', 'Карамелька', 'Персик', 'Вишенка'
+            ];
+
+            // Массив разноцветных сердечек для взрыва
+            const heartColors = [
+                '❤️', '🧡', '💛', '💚', '💙', '💜', '🖤', '🤍', '🤎', '❤️‍🔥', '❤️‍🩹', '💔', '❤️', '🧡', '💛', '💚', '💙', '💜', '🩷', '💖', '💗', '💘', '💝', '💞', '💓', '💕'
+            ];
+
+            // ---- Функции для обычного режима ----
+            function getRandomEdgePoint(element) {
+                const rect = element.getBoundingClientRect();
+                const side = Math.floor(Math.random() * 4);
+                let x, y;
+                switch(side) {
+                    case 0: x = rect.left + Math.random() * rect.width; y = rect.top; break;
+                    case 1: x = rect.right; y = rect.top + Math.random() * rect.height; break;
+                    case 2: x = rect.left + Math.random() * rect.width; y = rect.bottom; break;
+                    case 3: x = rect.left; y = rect.top + Math.random() * rect.height; break;
+                }
+                return { x, y };
+            }
+
+            function createFloatingItemFromPoint(startX, startY) {
+                const randomIndex = Math.floor(Math.random() * floatingItems.length);
+                const text = floatingItems[randomIndex];
+                const item = document.createElement('div');
+                item.className = 'float-item';
+                item.textContent = text;
+                const size = 1.5 + Math.random() * 1.5;
+                item.style.fontSize = size + 'rem';
+                item.style.left = startX + 'px';
+                item.style.top = startY + 'px';
+                const dx = (Math.random() - 0.5) * 400;
+                const dy = (Math.random() - 0.5) * 400 - 100;
+                item.style.setProperty('--dx', dx + 'px');
+                item.style.setProperty('--dy', dy + 'px');
+                const duration = 2 + Math.random() * 2;
+                item.style.animation = `flyAway ${duration}s ease-out forwards`;
+                floatContainer.appendChild(item);
+                setTimeout(() => { if (item.parentNode) item.remove(); }, 4500);
+            }
+
+            function pulseHeart() {
+                heartMask.classList.add('pulse');
+                setTimeout(() => { heartMask.classList.remove('pulse'); }, 300);
+            }
+
+            function updateCounterDisplay() {
+                counterDisplay.textContent = `Нажатий: ${tapCount}`;
+            }
+
+            function fadeOutMusic(callback) {
+                let vol = musicAudio.volume;
+                const step = 0.05;
+                const interval = setInterval(() => {
+                    if (vol <= 0.01) {
+                        musicAudio.volume = 0;
+                        clearInterval(interval);
+                        if (callback) callback();
+                    } else {
+                        vol -= step;
+                        if (vol < 0) vol = 0;
+                        musicAudio.volume = vol;
+                    }
+                }, 50);
+            }
+
+            function fadeInMusic() {
+                let vol = musicAudio.volume;
+                const target = MUSIC_VOLUME;
+                const step = 0.05;
+                const interval = setInterval(() => {
+                    if (vol >= target - 0.01) {
+                        musicAudio.volume = target;
+                        clearInterval(interval);
+                    } else {
+                        vol += step;
+                        if (vol > target) vol = target;
+                        musicAudio.volume = vol;
+                    }
+                }, 50);
+            }
+
+            // ---- Функция взрыва (долгое нажатие) ----
+            function triggerExplosion() {
+                if (explosionTriggered) return;
+                explosionTriggered = true;
+
+                // Скрываем обычный режим
+                normalMode.style.display = 'none';
+                // Показываем режим взрыва
+                explosionMode.style.display = 'flex';
+
+                // Очищаем предыдущие парящие сердечки, если есть
+                floatingHeartsContainer.innerHTML = '';
+
+                // Генерируем 50 разноцветных сердечек
+                const heartCount = 50;
+                for (let i = 0; i < heartCount; i++) {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    
+                    // Случайный символ из массива
+                    const randomHeart = heartColors[Math.floor(Math.random() * heartColors.length)];
+                    heart.textContent = randomHeart;
+
+                    // Случайный размер (1.2rem - 2.8rem)
+                    const size = 1.2 + Math.random() * 1.6;
+                    heart.style.fontSize = size + 'rem';
+
+                    // Случайная позиция на экране (чтобы покрыть всю область вокруг текста)
+                    // Используем viewport width/height
+                    heart.style.left = Math.random() * 100 + '%';
+                    heart.style.top = Math.random() * 100 + '%';
+
+                    // Индивидуальная анимация: разная скорость, задержка, перемещение
+                    const duration = 8 + Math.random() * 10; // 8-18 секунд
+                    const delay = Math.random() * 5; // 0-5 сек
+                    heart.style.animation = `floatSlow ${duration}s infinite alternate ease-in-out`;
+                    heart.style.animationDelay = delay + 's';
+
+                    // Небольшая случайная начальная позиция смещения
+                    const xOffset = (Math.random() - 0.5) * 60;
+                    const yOffset = (Math.random() - 0.5) * 60;
+                    heart.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+
+                    floatingHeartsContainer.appendChild(heart);
+                }
+            }
+
+            // ---- Обработка клика ----
+            function handleTap(e) {
+                e.preventDefault?.();
+
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+
+                // Запуск музыки при первом клике
+                if (!musicStarted) {
+                    musicAudio.play().catch(err => console.warn('Музыка не запустилась, но это нормально для iOS.'));
+                    musicStarted = true;
+                }
+
+                pulseHeart();
+
+                tapCount++;
+                updateCounterDisplay();
+
+                // После 40 нажатий запускаем голосовое
+                if (tapCount >= 40 && !audioPlayed) {
+                    audioPlayed = true;
+                    fadeOutMusic(() => {
+                        greetingAudio.play().catch(err => console.warn('Голосовое не воспроизвелось'));
+                    });
+                    greetingAudio.addEventListener('ended', function onEnd() {
+                        greetingAudio.removeEventListener('ended', onEnd);
+                        fadeInMusic();
+                    });
+                }
+
+                // Генерация частиц с краёв (комплименты)
+                const count = 8 + Math.floor(Math.random() * 8);
+                for (let i = 0; i < count; i++) {
+                    const point = getRandomEdgePoint(heartWrapper);
+                    createFloatingItemFromPoint(point.x, point.y);
+                }
+            }
+
+            // ---- Долгое нажатие ----
+            function startLongPress(e) {
+                e.preventDefault();
+                if (explosionTriggered) return; // уже взорвано
+                if (longPressTimer) clearTimeout(longPressTimer);
+                longPressTimer = setTimeout(() => {
+                    triggerExplosion();
+                    longPressTimer = null;
+                }, LONG_PRESS_DURATION);
+            }
+
+            function cancelLongPress() {
+                if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            }
+
+            // События
+            heartWrapper.addEventListener('click', handleTap);
+
+            heartWrapper.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startLongPress(e);
+            });
+
+            heartWrapper.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                if (!explosionTriggered) {
+                    cancelLongPress();
+                    if (!longPressTimer) {
+                        // Если таймер не был запущен (короткое нажатие), эмулируем клик
+                        handleTap(e);
+                    }
+                }
+            });
+
+            heartWrapper.addEventListener('touchcancel', cancelLongPress);
+
+            heartWrapper.addEventListener('mousedown', startLongPress);
+            heartWrapper.addEventListener('mouseup', cancelLongPress);
+            heartWrapper.addEventListener('mouseleave', cancelLongPress);
+
+            heartWrapper.addEventListener('contextmenu', (e) => e.preventDefault());
+
+            // Ошибки загрузки аудио
+            musicAudio.addEventListener('error', () => console.warn('music.mp3 не найден'));
+            greetingAudio.addEventListener('error', () => console.warn('greeting.mp3 не найден'));
+        })();
+    </script>
+</body>
+</html>
