@@ -419,7 +419,7 @@
             }
 
             function handleTap(e) {
-                e.preventDefault(); // предотвращаем возможные двойные срабатывания
+                e.preventDefault();
 
                 if (longPressTimer) {
                     clearTimeout(longPressTimer);
@@ -450,8 +450,8 @@
                     });
                 }
 
-                // Уменьшил количество частиц для большей плавности (было 8-16, стало 5-10)
-                const count = 5 + Math.floor(Math.random() * 6);
+                // ★★★ ИЗМЕНЕНО: теперь вылетает от 2 до 4 комплиментов/сердечек ★★★
+                const count = 2 + Math.floor(Math.random() * 3); // 2–4
                 for (let i = 0; i < count; i++) {
                     const point = getRandomEdgePoint(heartWrapper);
                     createFloatingItemFromPoint(point.x, point.y);
@@ -475,10 +475,8 @@
                 }
             }
 
-            // Основной обработчик клика
             heartWrapper.addEventListener('click', handleTap);
 
-            // Обработка касаний для мобильных устройств
             heartWrapper.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 startLongPress(e);
@@ -488,7 +486,6 @@
                 e.preventDefault();
                 if (!explosionTriggered) {
                     cancelLongPress();
-                    // Если не было долгого нажатия, вызываем handleTap
                     if (!longPressTimer) {
                         handleTap(e);
                     }
@@ -497,7 +494,6 @@
 
             heartWrapper.addEventListener('touchcancel', cancelLongPress);
 
-            // Для мыши (долгое нажатие)
             heartWrapper.addEventListener('mousedown', startLongPress);
             heartWrapper.addEventListener('mouseup', cancelLongPress);
             heartWrapper.addEventListener('mouseleave', cancelLongPress);
